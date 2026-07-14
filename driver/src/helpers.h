@@ -1,7 +1,6 @@
 #ifndef HELPERS_H
 #define HELPERS_H
-
-#include <linux/types.h>
+#include "compatibility.h"
 
 bool does_match(const char* mask, const char* file);
 #endif
