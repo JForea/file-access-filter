@@ -127,7 +127,7 @@ static int remove_rule(const char* mask) {
     return 0;
 }
 
-static void remove_all_rules() {
+static void remove_all_rules(void) {
     struct hlist_node *tmp;
     fad_rule *rule;
     int bkt;

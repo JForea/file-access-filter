@@ -3,12 +3,12 @@
 
 #include <linux/types.h>
 
-int rule_list_init(const char **rules, size_t count);
+static int rule_list_init(const char *const *rules, size_t count);
 
-int add_rule(const char *rule);
-int remove_rule(const char *mask);
-int remove_all_rules();
+static int add_rule(const char *rule);
+static int remove_rule(const char *mask);
+static void remove_all_rules(void);
 
-bool does_match_any_rule(const char *mask);
+static bool does_match_any_rule(const char *mask);
 
 #endif
