@@ -1,5 +1,6 @@
 # VS code
 .vscode/
+compile_commands.json
 
 # CMake
 tools/build/
