@@ -3,7 +3,7 @@ PROJECT_NAME := file-access-filter
 ifneq ($(KERNELRELEASE),)
 
 obj-m += $(PROJECT_NAME).o
-file-access-filter-y := src/main.o src/device_handlers.o
+file-access-filter-y := src/main.o src/device_handlers.o src/rule_list.o
 
 else
 
