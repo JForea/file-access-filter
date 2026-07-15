@@ -1,9 +1,12 @@
 PROJECT_NAME := file-access-filter
 
+SRC_DIR ?= src
+
 ifneq ($(KERNELRELEASE),)
 
 obj-m += $(PROJECT_NAME).o
-file-access-filter-y := src/main.o src/device_handlers.o src/rule_list.o
+file-access-filter-y := $(SRC_DIR)/main.o $(SRC_DIR)/device_handlers.o $(SRC_DIR)/rule_list.o $(SRC_DIR)/helpers.o
+ccflags-y += -I$(src)/../include
 
 else
 
@@ -17,7 +20,7 @@ LDLIBS := -lcunit
 USER_TEST_BIN := $(BUILD_DIR)/user
 USER_TEST_SRC := tests/user/helpers-tests.c
 
-HELPERS  := src/helpers.c
+HELPERS  := $(SRC_DIR)/helpers.c
 
 .PHONY: module test load unload clean
 
