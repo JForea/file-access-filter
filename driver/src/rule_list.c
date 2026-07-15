@@ -33,7 +33,7 @@ static fad_rule *find_rule(const char* mask) {
 
     hash_for_each_possible(rule_hash_table, rule, hash_node, hash) {
         /*
-        * Collisions are possible, so we need to chech string for equality.
+        * Collisions are possible, so we need to check string for equality.
         */
         if (rule->hash == hash && strcmp(rule->mask, mask) == 0) {
             return rule;
@@ -52,7 +52,7 @@ static bool does_exist(const char *mask) {
 }
 
 
-static int rule_list_init(const char *const *rules, size_t count) {
+int rule_list_init(const char *const *rules, size_t count) {
     if (rules == NULL && count != 0) {
         return -EINVAL;
     }
@@ -71,7 +71,7 @@ static int rule_list_init(const char *const *rules, size_t count) {
     return 0;
 }
 
-static int add_rule(const char* mask) {
+int add_rule(const char* mask) {
     if (!mask) {
         return -EINVAL;
     }
@@ -111,7 +111,7 @@ static void remove_and_free(fad_rule *rule) {
     kfree(rule);
 }
 
-static int remove_rule(const char* mask) {
+int remove_rule(const char* mask) {
     if (!mask) {
         return -EINVAL;
     }
@@ -127,7 +127,7 @@ static int remove_rule(const char* mask) {
     return 0;
 }
 
-static void remove_all_rules(void) {
+void remove_all_rules(void) {
     struct hlist_node *tmp;
     fad_rule *rule;
     int bkt;
@@ -137,7 +137,7 @@ static void remove_all_rules(void) {
     }
 }
 
-static bool does_match_any_rule(const char* file) {
+bool does_match_any_rule(const char* file) {
     fad_rule *rule;
     int bkt;
 
