@@ -9,6 +9,6 @@ int add_rule(const char *rule);
 int remove_rule(const char *mask);
 void remove_all_rules(void);
 
-static bool does_match_any_rule(const char *mask);
+bool does_match_any_rule(const char *file);
 
 #endif
