@@ -25,6 +25,16 @@ static struct file_operations fops = {
     .release = fad_release,
 };
 
+static char *fad_devnode(const struct device *dev, umode_t *mode) {
+    /*
+    * Only root user can access device.
+    */
+    if (mode)
+        *mode = 0600;
+
+    return NULL;
+}
+
 static int __init fad_init(void) {
     int err;
     struct device *dev;
@@ -54,6 +64,7 @@ static int __init fad_init(void) {
         unregister_chrdev(state.major, DEVICE_NAME);
         return PTR_ERR(cls);
     }
+    cls->devnode = fad_devnode;
     
     dev = device_create(cls, NULL, devt, NULL, DEVICE_NAME);
     if (IS_ERR(dev)) {
