@@ -83,6 +83,6 @@ long fad_ioctl(struct file *filep, unsigned int cmd, unsigned long arg) {
 }
 
 int fad_release(struct inode *inodep, struct file *filep) { 
-      printk(KERN_INFO "FAD: Device closed.\n"); 
-      return 0; 
+	printk(KERN_INFO "FAD: Device closed.\n"); 
+	return 0; 
 }
