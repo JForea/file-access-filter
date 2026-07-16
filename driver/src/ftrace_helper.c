@@ -1,6 +1,6 @@
 #include "ftrace_helper.h"
 #include "rule_list.h"
-#include "compatibility.h"
+#include "kallsyms_compatibility.h"
 
 #include <linux/ftrace.h>
 #include <linux/kallsyms.h>
@@ -61,6 +61,10 @@ static struct ftrace_hook hooked_functions[] = {
 };
 
 static int resolve_hook_address(struct ftrace_hook *hook) {
+/*
+* Small hack to enable function kallsyms_lookup_name_t(),
+* which is deprecated in modern kernel versions.
+*/
 #ifdef KPROBE_LOOKUP
     typedef unsigned long (*kallsyms_lookup_name_t)(const char *name);
     kallsyms_lookup_name_t kallsyms_lookup_name;
