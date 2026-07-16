@@ -3,6 +3,7 @@
 
 #include "fad_state.h"
 #include "device_handlers.h"
+#include "ftrace_helper.h"
 
 const char* DEVICE_NAME = "fad";
 
@@ -19,20 +20,27 @@ static struct file_operations fops = {
 };
 
 static int __init fad_init(void) {
+    int err;
+
     state.major = register_chrdev(0, DEVICE_NAME, &fops);
     if (state.major < 0) { 
         printk(KERN_ALERT "FAD: Failed to register major number.\n"); 
         return state.major; 
     }
 
-    
-    printk(KERN_INFO "FAD: File access driver started.");
+    err = fh_init();
+    if (err) {
+        return err;
+    }
+
+    printk(KERN_INFO "FAD: File access driver started.\n");
     return 0;
 }
 
 static void __exit fad_exit(void) {
     unregister_chrdev(state.major, DEVICE_NAME);
-    printk(KERN_INFO "FAD: File access driver stopped.");
+    fh_exit();
+    printk(KERN_INFO "FAD: File access driver stopped.\n");
 }
 
 module_init(fad_init);

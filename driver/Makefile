@@ -5,7 +5,7 @@ SRC_DIR ?= src
 ifneq ($(KERNELRELEASE),)
 
 obj-m += $(PROJECT_NAME).o
-file-access-filter-y := $(SRC_DIR)/main.o $(SRC_DIR)/device_handlers.o $(SRC_DIR)/rule_list.o $(SRC_DIR)/helpers.o
+file-access-filter-y := $(SRC_DIR)/main.o $(SRC_DIR)/device_handlers.o $(SRC_DIR)/rule_list.o $(SRC_DIR)/helpers.o $(SRC_DIR)/ftrace_helper.o
 ccflags-y += -I$(src)/../include
 
 else

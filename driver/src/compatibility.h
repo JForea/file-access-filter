@@ -6,8 +6,17 @@
 
 #ifdef __KERNEL__
 
+#include <linux/version.h>
 #include <linux/string.h>
 #include <linux/types.h>
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,7,0)
+#define KPROBE_LOOKUP 1
+#include <linux/kprobes.h>
+static struct kprobe kp = {
+    .symbol_name = "kallsyms_lookup_name"
+};
+#endif
 
 #else
 
