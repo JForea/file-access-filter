@@ -52,23 +52,8 @@ static bool does_exist(const char *mask) {
 }
 
 
-int rule_list_init(const char *const *rules, size_t count) {
-    if (rules == NULL && count != 0) {
-        return -EINVAL;
-    }
-
+void rule_list_init(void) {
     hash_init(rule_hash_table);
-
-    for (size_t i = 0; i < count; i++) {
-        int status = add_rule(rules[i]);
-        
-        if (status != 0) {
-            remove_all_rules();
-            return status;
-        }
-    }
-
-    return 0;
 }
 
 int add_rule(const char* mask) {

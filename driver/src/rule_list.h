@@ -3,7 +3,7 @@
 
 #include <linux/types.h>
 
-int rule_list_init(const char *const *rules, size_t count);
+void rule_list_init(void);
 
 int add_rule(const char *rule);
 int remove_rule(const char *mask);
