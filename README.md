@@ -22,7 +22,7 @@ To unload driver use:
 make unload
 ```
 
-## User application building\
+## User application building
 
 Navigate to the tools directory and run from command line:
 
