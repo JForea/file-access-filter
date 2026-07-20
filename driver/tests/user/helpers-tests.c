@@ -1,4 +1,4 @@
-#include "../src/helpers.h"
+#include "../../src/helpers.h"
 
 #include "CUnit/CUnit.h"
 #include "CUnit/Basic.h"
@@ -24,7 +24,8 @@ static void test_does_match() {
         {NULL, "a", false},
         {"a", NULL, false},
         {NULL, NULL, false},
-        {"", "", true}
+        {"", "", true},
+        {"abc", "abc\0\0", true},
     };
 
     for (size_t i = 0; i < sizeof(test_cases) / sizeof(does_match_test_case); ++i) {
