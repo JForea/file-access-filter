@@ -22,6 +22,15 @@ To unload driver use:
 make unload
 ```
 
+## User application building\
+
+Navigate to the tools directory and run from command line:
+
+```bash
+cmake -S . -B build
+cmake --build build
+```
+
 ## Testing
 
 Unit tests are built and executed in user space using **CUnit**.
