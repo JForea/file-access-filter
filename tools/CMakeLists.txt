@@ -8,6 +8,7 @@ add_executable(
     user_application/src/main.cpp
     user_application/src/Helpers.cpp
     user_application/src/IoctlHelpers.cpp
+    user_application/src/FileHelpers.cpp
 )
 
 target_include_directories(

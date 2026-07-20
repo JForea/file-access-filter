@@ -3,15 +3,17 @@
 #include "Commands.hpp"
 #include "Helpers.hpp"
 #include "IoctlHelpers.hpp"
+#include "FileHelpers.hpp"
 
 const std::string WrongUsage = "Wrong usage: faf [command]\n";
 
 int main(int argc, char* argv[]){
-    if (argc < 2) {
+    if (argc < 2 || argc > 3) {
         std::cerr << WrongUsage;
         return 1;
     }
 
+    EnsureConfigFileExists();
     Command cmd = ParseCommand(argv[1]);
 
     try {
@@ -32,6 +34,7 @@ int main(int argc, char* argv[]){
             }
 
             AddMask(argv[2]);
+            WriteMaskToFile(argv[2]);
 
             std::cout << "Added.\n";
             return 0;
@@ -43,12 +46,26 @@ int main(int argc, char* argv[]){
             }
 
             RemoveMask(argv[2]);
+            RemoveMaskFromFile(argv[2]);
 
             std::cout << "Removed.\n";
             return 0;
 
-        case Command::View:
-            std::cout << "PLACEHOLDER\n";
+        case Command::View: {
+            auto masks = ReadMasksFromFile();
+
+            std::cout << "Current masks are:\n";
+            for (std::string mask : masks)
+                std::cout << mask << '\n';
+
+            return 0;
+        }
+
+        case Command::Clear:
+            ClearMasks();
+            RemoveAllMasksFromFile();
+
+            std::cout << "Cleared.\n";
 
             return 0;
 
