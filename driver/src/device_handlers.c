@@ -17,7 +17,7 @@ static char *parse_mask(unsigned long arg) {
 		sizeof(rule)
 	) != 0) {
 		return ERR_PTR(-EFAULT);
-	} 
+	}
 	
 	if (rule.length > FAD_MAX_MASK_LENGTH) {
 		return ERR_PTR(-E2BIG);

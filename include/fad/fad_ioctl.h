@@ -10,6 +10,8 @@
 */
 #define FAD_MAGIC 'f'
 
+static const char *DEVICE_NAME = "fad";
+
 typedef struct {
     __u64 mask;
     __u32 length;

@@ -3,12 +3,13 @@
 #include <linux/device/class.h>
 #include <linux/device.h>
 
+#include <fad/fad_ioctl.h>
+
 #include "fad_state.h"
 #include "device_handlers.h"
 #include "ftrace_helper.h"
 #include "rule_list.h"
 
-static const char *DEVICE_NAME = "fad";
 static dev_t devt;
 
 static struct class *cls;
