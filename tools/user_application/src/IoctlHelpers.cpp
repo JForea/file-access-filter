@@ -10,11 +10,11 @@
 
 #include <fad/fad_ioctl.h>
 
-std::string Device = std::string("/dev/") + DEVICE_NAME;
+const std::string Device = std::string("/dev/") + DEVICE_NAME;
 
-std::string FdOpenErrMessage("Couldn't open file descriptor.");
-std::string FdOpenAccessErrorMessage("You don't have permission to interact with file access driver.");
-std::string IoctlErrorMessage("Error during ioctl.");
+const std::string FdOpenErrMessage = "Couldn't open file descriptor.";
+const std::string FdOpenAccessErrorMessage = "You don't have permission to interact with file access driver.";
+const std::string IoctlErrorMessage = "Error during ioctl.";
 
 fad_ioctl_rule FormRule(const char* mask) {
     return {
@@ -25,13 +25,19 @@ fad_ioctl_rule FormRule(const char* mask) {
     };
 }
 
-void AddMask(const char* mask) {
+int OpenDevice() {
     int fd = open(Device.c_str(), O_RDWR);
     if (fd < 0) {
         if (errno == EACCES)
             throw std::runtime_error(FdOpenAccessErrorMessage);
         throw std::runtime_error(FdOpenErrMessage);
     }
+
+    return fd;
+}
+
+void AddMask(const char* mask) {
+    int fd = OpenDevice();
 
     fad_ioctl_rule rule = FormRule(mask);
 
@@ -46,12 +52,7 @@ void AddMask(const char* mask) {
 }
 
 void RemoveMask(const char* mask) {
-    int fd = open(Device.c_str(), O_RDWR);
-    if (fd < 0) {
-        if (errno == EACCES)
-            throw std::runtime_error(FdOpenAccessErrorMessage);
-        throw std::runtime_error(FdOpenErrMessage);
-    }
+    int fd = OpenDevice();
 
     fad_ioctl_rule rule = FormRule(mask);
 
@@ -66,12 +67,7 @@ void RemoveMask(const char* mask) {
 }
 
 void ClearMasks() {
-    int fd = open(Device.c_str(), O_RDWR);
-    if (fd < 0) {
-        if (errno == EACCES)
-            throw std::runtime_error(FdOpenAccessErrorMessage);
-        throw std::runtime_error(FdOpenErrMessage);
-    }
+    int fd = OpenDevice();
 
     if (ioctl(fd, FAD_CLEAR) < 0) {
         close(fd);
@@ -79,8 +75,4 @@ void ClearMasks() {
     }
 
     close(fd);
-}
-
-std::vector<std::string> GetMasks() {
-    return {};
 }
