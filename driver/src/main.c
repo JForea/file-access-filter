@@ -5,7 +5,6 @@
 
 #include <fad/fad_ioctl.h>
 
-#include "fad_state.h"
 #include "device_handlers.h"
 #include "ftrace_helper.h"
 #include "rule_list.h"
@@ -14,7 +13,7 @@ static dev_t devt;
 
 static struct class *cls;
 
-static fad_state state;
+static int major;
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("JForea");
@@ -47,12 +46,12 @@ static int __init fad_init(void) {
         return err;
     }
 
-    state.major = register_chrdev(0, DEVICE_NAME, &fops);
-    if (state.major < 0) { 
+    major = register_chrdev(0, DEVICE_NAME, &fops);
+    if (major < 0) { 
         printk(KERN_ALERT "FAD: Failed to register major number.\n"); 
-        return state.major; 
+        return major; 
     }
-    devt = MKDEV(state.major, 0);
+    devt = MKDEV(major, 0);
 
     /*
     * In older kernel versions the signature for class_create
@@ -62,7 +61,7 @@ static int __init fad_init(void) {
     cls = class_create(DEVICE_NAME);
     if (IS_ERR(cls)) {
         printk(KERN_ALERT "FAD: Failed to create device class.\n");
-        unregister_chrdev(state.major, DEVICE_NAME);
+        unregister_chrdev(major, DEVICE_NAME);
         return PTR_ERR(cls);
     }
     cls->devnode = fad_devnode;
@@ -71,18 +70,18 @@ static int __init fad_init(void) {
     if (IS_ERR(dev)) {
         printk(KERN_ALERT "FAD: Failed to create device class.\n");
         class_destroy(cls);
-        unregister_chrdev(state.major, DEVICE_NAME);
+        unregister_chrdev(major, DEVICE_NAME);
         return PTR_ERR(dev);
     }
 
-    printk(KERN_INFO "FAD: File access driver started. Device character registered with major %d\n", state.major);
+    printk(KERN_INFO "FAD: File access driver started. Device character registered with major %d\n", major);
     return 0;
 }
 
 static void __exit fad_exit(void) {
     device_destroy(cls, devt);
     class_destroy(cls);
-    unregister_chrdev(state.major, DEVICE_NAME);
+    unregister_chrdev(major, DEVICE_NAME);
     fh_exit();
     remove_all_rules();
     printk(KERN_INFO "FAD: File access driver stopped.\n");
