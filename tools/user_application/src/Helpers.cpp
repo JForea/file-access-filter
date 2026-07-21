@@ -11,6 +11,8 @@ Command ParseCommand(const std::string& s) noexcept {
         return Command::View;
     if (s == "clear")
         return Command::Clear;
+    if (s == "reload")
+        return Command::Reload;
 
     return Command::Unrecognized;
 }

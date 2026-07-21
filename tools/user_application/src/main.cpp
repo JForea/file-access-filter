@@ -24,7 +24,8 @@ int main(int argc, char* argv[]){
                 "add [mask] - add new mask to driver\n" <<
                 "remove [mask] - remove mask from driver\n" <<
                 "view - view list of masks in driver\n" <<
-                "clear - remove all masks from driver\n";
+                "clear - remove all masks from driver\n" <<
+                "reload - clear all masks in driver and then load masks from config file\n";
             return 0;
 
         case Command::Add:
@@ -68,6 +69,18 @@ int main(int argc, char* argv[]){
             std::cout << "Cleared.\n";
 
             return 0;
+
+        case Command::Reload: {
+            ClearMasks();
+            auto masks = ReadMasksFromFile();
+
+            for (std::string mask : masks)
+                AddMask(mask.c_str());
+
+            std::cout << "Loaded.\n";
+
+            return 0;
+        }
 
         default:
             std::cerr << "Unknown command. Use 'faf help' for command list.\n";

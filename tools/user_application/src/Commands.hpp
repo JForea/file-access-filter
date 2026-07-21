@@ -9,4 +9,5 @@ enum class Command : uint8_t {
     Remove = 3,
     View = 4,
     Clear = 5,
+    Reload = 6,
 };
