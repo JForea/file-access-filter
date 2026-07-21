@@ -22,13 +22,23 @@ To unload driver use:
 make unload
 ```
 
-## User application building
+## User application
+
+### Building
 
 Navigate to the tools directory and run from command line:
 
 ```bash
 cmake -S . -B build
 cmake --build build
+```
+
+### Using
+
+After the build navigate to tools/build directory. There you'll see **faf** executable file. To run commands you need to run it with sudo. To see command list run the following command:
+
+```bash
+sudo faf help
 ```
 
 ## Testing
