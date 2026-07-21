@@ -6,7 +6,7 @@
 #include <fad/fad_ioctl.h>
 
 #include "device_handlers.h"
-#include "ftrace_helper.h"
+#include "ftrace_helpers.h"
 #include "rule_list.h"
 
 static dev_t devt;

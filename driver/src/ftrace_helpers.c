@@ -1,4 +1,4 @@
-#include "ftrace_helper.h"
+#include "ftrace_helpers.h"
 #include "rule_list.h"
 #include "kallsyms_compatibility.h"
 
@@ -8,12 +8,12 @@
 #define MAX_LENGTH 4096
 
 struct ftrace_hook {
-    const char *name;
-    void *function;
-    void *original;
+    const char *name; /* Name of the kernel function to hook */
+    void *function; /* Pointer to provided replacement function */
+    void *original; /* Pointer to a variable that will store the original function */
 
-    unsigned long address;
-    struct ftrace_ops ops;
+    unsigned long address; /* Resolved address of the original kernel function*/
+    struct ftrace_ops ops; /* ftrace configuration and callback state */
 };
 
 static asmlinkage long (*real_do_sys_openat2)(
@@ -22,6 +22,10 @@ static asmlinkage long (*real_do_sys_openat2)(
 	struct open_how *how
 );
 
+/*
+* In this function main logic is being executed.
+* This function is called before real do_sys_openat2().
+*/
 static asmlinkage long fh_do_sys_openat2(
     int dfd, 
     const char __user *filename,
@@ -60,6 +64,9 @@ static struct ftrace_hook hooked_functions[] = {
     }
 };
 
+/*
+* Finds the address of original function.
+*/
 static int resolve_hook_address(struct ftrace_hook *hook) {
 /*
 * Small hack to enable function kallsyms_lookup_name_t(),
@@ -85,6 +92,9 @@ static int resolve_hook_address(struct ftrace_hook *hook) {
     return 0;
 }
 
+/*
+* This function is called before executing fh_func().
+*/
 static void notrace fh_ftrace_thunk(
     unsigned long ip, 
     unsigned long parent_ip,
@@ -93,6 +103,10 @@ static void notrace fh_ftrace_thunk(
 ) {
     struct ftrace_hook *hook = container_of(ops, struct ftrace_hook, ops);
 
+    /*
+    * Check if we are calling fh_func() from this module.
+    * If we are not then it'll be OK, proceed the call.
+    */
     if (!within_module(parent_ip, THIS_MODULE)) {
         ftrace_regs_set_instruction_pointer(
             regs,
@@ -109,11 +123,11 @@ static int fh_install_hook(struct ftrace_hook *hook) {
         return err;
     }
 
-    hook->ops.func = fh_ftrace_thunk;
+    hook->ops.func = fh_ftrace_thunk; /* Register callback function */
     hook->ops.flags = 
-        FTRACE_OPS_FL_SAVE_REGS |
-        FTRACE_OPS_FL_RECURSION |
-        FTRACE_OPS_FL_IPMODIFY;
+        FTRACE_OPS_FL_SAVE_REGS |   /* Save registers before invoking the callback */
+        FTRACE_OPS_FL_RECURSION |   /* Prevent recursive callback invocation */
+        FTRACE_OPS_FL_IPMODIFY;     /* Allow the callback to modify the instruction pointer */
 
     err = ftrace_set_filter_ip(&hook->ops, hook->address, 0, 0);
     if (err) {
