@@ -5,6 +5,7 @@
 #include <linux/jhash.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+#include <linux/mutex.h>
 
 #define RULE_HASH_BITS 10
 
@@ -16,6 +17,7 @@ typedef struct {
 } fad_rule;
 
 static DEFINE_HASHTABLE(rule_hash_table, RULE_HASH_BITS);
+static DEFINE_MUTEX(hash_table_mutex);
 
 static u32 rule_hash(const char *mask) {
     return jhash(mask, strlen(mask), 0);
@@ -57,32 +59,42 @@ void rule_list_init(void) {
 }
 
 int add_rule(const char* mask) {
+    fad_rule *rule;
+    int ret = 0;
+
     if (!mask) {
         return -EINVAL;
     }
 
+    mutex_lock(&hash_table_mutex);
+
     if (does_exist(mask)) {
-        return -EEXIST;
+        ret = -EEXIST;
+        goto cleanup;
     }
 
-    fad_rule *rule;
     rule = kzalloc(sizeof(fad_rule), GFP_KERNEL);
 
-    if (!rule)
-        return -ENOMEM;
-        
+    if (!rule) {
+        ret = -ENOMEM;
+        goto cleanup;
+    }
+
     rule->mask = kstrdup(mask, GFP_KERNEL);
 
     if (!rule->mask) {
         kfree(rule);
-        return -ENOMEM;
+        ret = -ENOMEM;
+        goto cleanup;
     }
 
     rule->hash = rule_hash(mask);
 
     hash_add(rule_hash_table, &rule->hash_node, rule->hash);
 
-    return 0;
+cleanup:
+    mutex_unlock(&hash_table_mutex);
+    return ret;
 }
 
 static void remove_and_free(fad_rule *rule) {
@@ -97,19 +109,28 @@ static void remove_and_free(fad_rule *rule) {
 }
 
 int remove_rule(const char* mask) {
+    fad_rule *rule;
+    int ret = 0;
+
+    mutex_lock(&hash_table_mutex);
+
     if (!mask) {
-        return -EINVAL;
+        ret = -EINVAL;
+        goto cleanup;
     }
 
-    fad_rule *rule = find_rule(mask);
+    rule = find_rule(mask);
 
     if (!rule) {
-        return -ENOENT;
+        ret = -ENOENT;
+        goto cleanup;
     }
-
+    
     remove_and_free(rule);
 
-    return 0;
+cleanup:
+    mutex_unlock(&hash_table_mutex);
+    return ret;
 }
 
 void remove_all_rules(void) {
@@ -117,24 +138,34 @@ void remove_all_rules(void) {
     fad_rule *rule;
     int bkt;
 
+    mutex_lock(&hash_table_mutex);
+
     hash_for_each_safe(rule_hash_table, bkt, tmp, rule, hash_node) {
         remove_and_free(rule);
     }
+
+    mutex_unlock(&hash_table_mutex);
 }
 
 bool does_match_any_rule(const char* file) {
     fad_rule *rule;
     int bkt;
+    bool found = false;
 
     if (!file) {
         return false;
     }
 
+    mutex_lock(&hash_table_mutex);
+
     hash_for_each(rule_hash_table, bkt, rule, hash_node) {
         if (does_match(rule->mask, file)) {
-            return true;
+            found = true;
+            goto cleanup;
         }
     }
 
-    return false;
+cleanup:
+    mutex_unlock(&hash_table_mutex);
+    return found;
 }

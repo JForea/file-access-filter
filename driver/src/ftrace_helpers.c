@@ -37,8 +37,8 @@ static asmlinkage long fh_do_sys_openat2(
     pr_debug("real_do_sys_openat2() called: filename=%p", filename);
 
     path = kmalloc(MAX_LENGTH, GFP_KERNEL);
-    if (!path) {
-        return -ENOMEM;
+    if (IS_ERR_OR_NULL(path)) {
+        return ERR_PTR(path);
     }
 
     copied = strncpy_from_user(path, filename, MAX_LENGTH);
