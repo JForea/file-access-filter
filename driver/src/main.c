@@ -6,7 +6,7 @@
 #include <fad/fad_ioctl.h>
 
 #include "device_handlers.h"
-#include "ftrace_helpers.h"
+#include "kprobe_helpers.h"
 #include "rule_list.h"
 
 static dev_t devt;
@@ -41,7 +41,7 @@ static int __init fad_init(void) {
 
     rule_list_init();
 
-    err = fh_init();
+    err = kprobe_init();
     if (err) {
         return err;
     }
@@ -82,7 +82,7 @@ static void __exit fad_exit(void) {
     device_destroy(cls, devt);
     class_destroy(cls);
     unregister_chrdev(major, DEVICE_NAME);
-    fh_exit();
+    kprobe_exit();
     remove_all_rules();
     printk(KERN_INFO "FAD: File access driver stopped.\n");
 }
