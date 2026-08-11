@@ -74,7 +74,7 @@ int main(int argc, char* argv[]){
             ClearMasks();
             auto masks = ReadMasksFromFile();
 
-            for (std::string mask : masks)
+            for (const std::string& mask : masks)
                 AddMask(mask.c_str());
 
             std::cout << "Loaded.\n";
