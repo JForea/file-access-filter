@@ -46,12 +46,16 @@ static int pre_handler(struct kprobe* p, struct pt_regs *regs) {
     return 0;
 }
 
+static void post_handler(struct kprobe *p, struct pt_regs *regs, unsigned long flags) {}
+
 NOKPROBE_SYMBOL(pre_handler);
+NOKPROBE_SYMBOL(post_handler);
 NOKPROBE_SYMBOL(do_sys_openat2_replacement);
 
 int kprobe_init(void) {
     int ret;
     kp.pre_handler = pre_handler;
+    kp.post_handler = post_handler;
 
     ret = register_kprobe(&kp);
 
