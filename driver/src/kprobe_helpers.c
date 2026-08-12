@@ -64,7 +64,7 @@ int kprobe_init(void) {
         return ret;
     }
 
-    printk(KERN_INFO "Planted kprobe at %p\n", kp.addr);
+    printk(KERN_INFO "addr: %px, offset: %u\n", kp.addr, kp.offset);
 
     return 0;
 }
