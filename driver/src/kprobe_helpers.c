@@ -26,7 +26,6 @@ static int pre_handler(struct kprobe* p, struct pt_regs *regs) {
 
     n = strncpy_from_user(k_filename, u_filename, MAX_PATH_SIZE);
     if (n < 0) {
-        pr_info("failed to read filename: %ld\n", n);
         return 0;
     }
 
