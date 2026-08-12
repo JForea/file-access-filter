@@ -35,10 +35,10 @@ static int pre_handler(struct kprobe* p, struct pt_regs *regs) {
     }
 
     if (does_match_any_rule(k_filename)) {
-        instruction_pointer_set(
-            regs,
-            (unsigned long)do_sys_openat2_replacement
-        );
+        // instruction_pointer_set(
+        //     regs,
+        //     (unsigned long)do_sys_openat2_replacement
+        // );
         
         return 1;
     }
